@@ -151,8 +151,6 @@ namespace NinthProject.Controllers
             return _context.Courses.Any(e => e.CourseId == id);
         }
         // GET: Courses/Related/5
-        [HttpGet, ActionName("Related")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Related(int? id)
         {
             if (id == null)
@@ -167,7 +165,8 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
             var group = new Groups();
-            return View(await _context.Courses.Where(j => j.CourseId == group.CourseId).ToListAsync());
+            var f = _context.Courses.Where(j => j.CourseId == group.CourseId);
+            return View(f);
         }
     }
 }
