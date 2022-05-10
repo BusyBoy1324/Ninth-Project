@@ -25,7 +25,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                <a asp-action="Related" asp-route-id="@item.CourseId">
+                <a asp-contoller="Group" asp-action="RelatedGroups" asp-route-id="@item.CourseId">
                 @Html.DisplayFor(modelItem => item.CourseName)
                 </a>
             </td>

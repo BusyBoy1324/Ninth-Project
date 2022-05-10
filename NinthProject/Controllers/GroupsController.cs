@@ -131,6 +131,11 @@ namespace NinthProject.Controllers
             {
                 return NotFound();
             }
+            //var students = _context.Students.Where(s => s.GroupId == id).ToList<Students>();
+            //if (students.Count > 0)
+            //{
+            //    return NotFound();
+            //}
 
             return View(groups);
         }
@@ -140,15 +145,40 @@ namespace NinthProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var groups = await _context.Groups.FindAsync(id);
-            _context.Groups.Remove(groups);
-            await _context.SaveChangesAsync();
+            var students = _context.Students.Where(s => s.GroupId == id).ToList<Students>();
+            if (students.Count > 0)
+            {
+                ViewBag.Message = "Error! Group has students!";
+            }
+            else
+            {
+                var groups = await _context.Groups.FindAsync(id);
+                _context.Groups.Remove(groups);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 
         private bool GroupsExists(int id)
         {
             return _context.Groups.Any(e => e.GroupId == id);
+        }
+        // GET: Groups/Related/5
+        public async Task<IActionResult> RelatedStudents(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var groups = await _context.Groups
+                .FirstOrDefaultAsync(m => m.GroupId == id);
+            if (groups == null)
+            {
+                return NotFound();
+            }
+
+            return View(_context.Students.Where(j => j.GroupId == id).ToList<Students>());
         }
     }
 }

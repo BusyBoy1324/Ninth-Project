@@ -151,7 +151,7 @@ namespace NinthProject.Controllers
             return _context.Courses.Any(e => e.CourseId == id);
         }
         // GET: Courses/Related/5
-        public async Task<IActionResult> Related(int? id)
+        public async Task<IActionResult> RelatedGroups(int? id)
         {
             if (id == null)
             {
@@ -164,9 +164,8 @@ namespace NinthProject.Controllers
             {
                 return NotFound();
             }
-            var group = new Groups();
-            var f = _context.Courses.Where(j => j.CourseId == group.CourseId);
-            return View(f);
+
+            return View(_context.Groups.Where(j => j.CourseId == id).ToList<Groups>());
         }
     }
 }

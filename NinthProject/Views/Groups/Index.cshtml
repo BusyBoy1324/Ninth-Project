@@ -30,7 +30,7 @@
                
             </td>
             <td>
-                <a asp-action="Related" asp-route-id="@item.GroupId">
+                 <a asp-contoller="Student" asp-action="RelatedStudents" asp-route-id="@item.GroupId">
                 @Html.DisplayFor(modelItem => item.GroupName)
                  </a>
             </td>
