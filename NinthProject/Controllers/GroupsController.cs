@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NinthProject.Data;
+using NinthProject.Infrastructure;
 using NinthProject.Models;
 
 namespace NinthProject.Controllers
 {
     public class GroupsController : Controller
     {
-        private readonly NinthProjectContext _context;
+        private IUnitOfWork _unitOfWork;
 
-        public GroupsController(NinthProjectContext context)
+        public GroupsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Groups
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Groups.ToListAsync());
+            return View(_unitOfWork.GroupRepos.GetAll());
         }
 
         // GET: Groups/Details/5
@@ -34,8 +35,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var groups = await _context.Groups
-                .FirstOrDefaultAsync(m => m.GroupId == id);
+            var groups = _unitOfWork.GroupRepos.GetById(id);
             if (groups == null)
             {
                 return NotFound();
@@ -47,6 +47,8 @@ namespace NinthProject.Controllers
         // GET: Groups/Create
         public IActionResult Create()
         {
+            ViewBag.CourseId = new SelectList(_unitOfWork.GroupRepos.GetDbSetCourses(), "CourseId", "CourseId");
+
             return View();
         }
 
@@ -59,8 +61,8 @@ namespace NinthProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(groups);
-                await _context.SaveChangesAsync();
+                _unitOfWork.GroupRepos.Insert(groups);
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(groups);
@@ -74,7 +76,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var groups = await _context.Groups.FindAsync(id);
+            var groups = _unitOfWork.GroupRepos.Find(id);
             if (groups == null)
             {
                 return NotFound();
@@ -98,8 +100,8 @@ namespace NinthProject.Controllers
             {
                 try
                 {
-                    _context.Update(groups);
-                    await _context.SaveChangesAsync();
+                    _unitOfWork.GroupRepos.Update(groups);
+                    _unitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,17 +127,11 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var groups = await _context.Groups
-                .FirstOrDefaultAsync(m => m.GroupId == id);
+            var groups = _unitOfWork.GroupRepos.GetById(id);
             if (groups == null)
             {
                 return NotFound();
             }
-            //var students = _context.Students.Where(s => s.GroupId == id).ToList<Students>();
-            //if (students.Count > 0)
-            //{
-            //    return NotFound();
-            //}
 
             return View(groups);
         }
@@ -145,23 +141,23 @@ namespace NinthProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var students = _context.Students.Where(s => s.GroupId == id).ToList<Students>();
+            var students = _unitOfWork.GroupRepos.GetRelatedStudents(id);
             if (students.Count > 0)
             {
                 ViewBag.Message = "Error! Group has students!";
             }
             else
             {
-                var groups = await _context.Groups.FindAsync(id);
-                _context.Groups.Remove(groups);
-                await _context.SaveChangesAsync();
+                var groups = _unitOfWork.GroupRepos.Find(id);
+                _unitOfWork.GroupRepos.Delete(groups);
+                _unitOfWork.Save();
             }
             return RedirectToAction(nameof(Index));
         }
 
         private bool GroupsExists(int id)
         {
-            return _context.Groups.Any(e => e.GroupId == id);
+            return _unitOfWork.GroupRepos.GetAny(id);
         }
         // GET: Groups/Related/5
         public async Task<IActionResult> RelatedStudents(int? id)
@@ -171,14 +167,13 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var groups = await _context.Groups
-                .FirstOrDefaultAsync(m => m.GroupId == id);
+            var groups = _unitOfWork.GroupRepos.GetById(id);
             if (groups == null)
             {
                 return NotFound();
             }
 
-            return View(_context.Students.Where(j => j.GroupId == id).ToList<Students>());
+            return View(_unitOfWork.GroupRepos.GetRelatedStudents(id));
         }
     }
 }

@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NinthProject.Data;
+using NinthProject.Infrastructure;
 using NinthProject.Models;
 
 namespace NinthProject.Controllers
 {
     public class StudentsController : Controller
     {
-        private readonly NinthProjectContext _context;
+        private IUnitOfWork _unitOfWork;
 
-        public StudentsController(NinthProjectContext context)
+        public StudentsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Students
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Students.ToListAsync());
+            return View(_unitOfWork.StudentRepos.GetAll());
         }
 
         // GET: Students/Details/5
@@ -34,8 +35,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var students = await _context.Students
-                .FirstOrDefaultAsync(m => m.StudentId == id);
+            var students = _unitOfWork.StudentRepos.GetById(id);
             if (students == null)
             {
                 return NotFound();
@@ -47,6 +47,8 @@ namespace NinthProject.Controllers
         // GET: Students/Create
         public IActionResult Create()
         {
+            ViewBag.GroupId = new SelectList(_unitOfWork.StudentRepos.GetDbSetGroups(), "GroupId", "GroupId");
+
             return View();
         }
 
@@ -59,8 +61,8 @@ namespace NinthProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(students);
-                await _context.SaveChangesAsync();
+                _unitOfWork.StudentRepos.Insert(students);
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(students);
@@ -74,7 +76,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var students = await _context.Students.FindAsync(id);
+            var students = _unitOfWork.StudentRepos.Find(id);
             if (students == null)
             {
                 return NotFound();
@@ -98,8 +100,8 @@ namespace NinthProject.Controllers
             {
                 try
                 {
-                    _context.Update(students);
-                    await _context.SaveChangesAsync();
+                    _unitOfWork.StudentRepos.Update(students);
+                    _unitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,8 +127,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var students = await _context.Students
-                .FirstOrDefaultAsync(m => m.StudentId == id);
+            var students = _unitOfWork.StudentRepos.GetById(id);
             if (students == null)
             {
                 return NotFound();
@@ -140,15 +141,15 @@ namespace NinthProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var students = await _context.Students.FindAsync(id);
-            _context.Students.Remove(students);
-            await _context.SaveChangesAsync();
+            var students = _unitOfWork.StudentRepos.Find(id);
+            _unitOfWork.StudentRepos.Delete(students);
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool StudentsExists(int id)
         {
-            return _context.Students.Any(e => e.StudentId == id);
+            return _unitOfWork.StudentRepos.GetAny(id);
         }
     }
 }

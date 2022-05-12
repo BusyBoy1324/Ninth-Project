@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NinthProject", "NinthProject.csproj", "{446833FC-EAD2-4E46-AE02-A82E1A66C88F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NinthProjectTests", "..\NinthProjectTests\NinthProjectTests.csproj", "{A7EF0DD1-5B3C-46F4-A70B-B78B60DA8F5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{446833FC-EAD2-4E46-AE02-A82E1A66C88F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{446833FC-EAD2-4E46-AE02-A82E1A66C88F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{446833FC-EAD2-4E46-AE02-A82E1A66C88F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7EF0DD1-5B3C-46F4-A70B-B78B60DA8F5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7EF0DD1-5B3C-46F4-A70B-B78B60DA8F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7EF0DD1-5B3C-46F4-A70B-B78B60DA8F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7EF0DD1-5B3C-46F4-A70B-B78B60DA8F5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

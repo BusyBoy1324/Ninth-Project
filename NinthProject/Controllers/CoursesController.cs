@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NinthProject.Data;
+using NinthProject.Infrastructure;
 using NinthProject.Models;
 
 namespace NinthProject.Controllers
 {
     public class CoursesController : Controller
     {
-        private readonly NinthProjectContext _context;
+        private IUnitOfWork _unitOfWork;
 
-        public CoursesController(NinthProjectContext context)
+        public CoursesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Courses.ToListAsync());
+            return View(_unitOfWork.CoursesRepos.GetAll());
         }
 
         // GET: Courses/Details/5
@@ -34,8 +35,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var courses = await _context.Courses
-                .FirstOrDefaultAsync(m => m.CourseId == id);
+            var courses = _unitOfWork.CoursesRepos.GetById(id);
             if (courses == null)
             {
                 return NotFound();
@@ -59,8 +59,8 @@ namespace NinthProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(courses);
-                await _context.SaveChangesAsync();
+                _unitOfWork.CoursesRepos.Insert(courses);
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(courses);
@@ -74,7 +74,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var courses = await _context.Courses.FindAsync(id);
+            var courses = _unitOfWork.CoursesRepos.Find(id);
             if (courses == null)
             {
                 return NotFound();
@@ -98,8 +98,8 @@ namespace NinthProject.Controllers
             {
                 try
                 {
-                    _context.Update(courses);
-                    await _context.SaveChangesAsync();
+                    _unitOfWork.CoursesRepos.Update(courses);
+                    _unitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,8 +125,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var courses = await _context.Courses
-                .FirstOrDefaultAsync(m => m.CourseId == id);
+            var courses = _unitOfWork.CoursesRepos.GetById(id);
             if (courses == null)
             {
                 return NotFound();
@@ -140,15 +139,15 @@ namespace NinthProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var courses = await _context.Courses.FindAsync(id);
-            _context.Courses.Remove(courses);
-            await _context.SaveChangesAsync();
+            var courses = _unitOfWork.CoursesRepos.Find(id);
+            _unitOfWork.CoursesRepos.Delete(courses);
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CoursesExists(int id)
         {
-            return _context.Courses.Any(e => e.CourseId == id);
+            return _unitOfWork.CoursesRepos.GetAny(id);
         }
         // GET: Courses/Related/5
         public async Task<IActionResult> RelatedGroups(int? id)
@@ -158,14 +157,14 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var courses = await _context.Courses
-                .FirstOrDefaultAsync(m => m.CourseId == id);
+            var courses = _unitOfWork.CoursesRepos.GetById(id);
             if (courses == null)
             {
                 return NotFound();
             }
 
-            return View(_context.Groups.Where(j => j.CourseId == id).ToList<Groups>());
+            var relatedGroups = _unitOfWork.CoursesRepos.GetRelatedGroups(id);
+            return View(relatedGroups);
         }
     }
 }

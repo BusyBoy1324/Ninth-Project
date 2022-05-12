@@ -1,13 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NinthProject.Data;
+using NinthProject.Infrastructure;
+using NinthProject.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<NinthProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NinthProjectContext") ?? throw new InvalidOperationException("Connection string 'NinthProjectContext' not found.")));
-
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//builder.Services.AddDbContext<NinthProjectContext>(options =>
+//options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
