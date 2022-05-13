@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NinthProject\Presenatation.csproj" />
-    <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Presentation\Presenatation.csproj" />
   </ItemGroup>
 
 </Project>

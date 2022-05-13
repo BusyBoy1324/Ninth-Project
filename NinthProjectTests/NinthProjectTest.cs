@@ -23,7 +23,7 @@ namespace NinthProjectTests
         [TestMethod]
         public async void Courses_GetRelatedGroup_Returns_Groups()
         {
-            var actualGroups = _testClient.
+            //var actualGroups = _testClient.
         }
     }
 }
