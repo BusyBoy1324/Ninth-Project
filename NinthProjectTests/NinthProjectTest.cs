@@ -1,25 +1,29 @@
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NinthProject;
+using System.Linq;
+using System.Net.Http;
 
 namespace NinthProjectTests
 {
     [TestClass]
     public class NinthProjectTests
     {
-        private IUnitOfWork _unitOfWork;
+        private HttpClient _testClient;
 
-        public NinthProjectTests(IUnitOfWork unitOfWork)
+        [TestInitialize]
+        public void Initialize()
         {
-            _unitOfWork = unitOfWork;
+            var factory = new Utilities.CustomWebApplicationFactory<Program>();
+            this._testClient = factory.CreateClient();
         }
-
         [TestMethod]
-        public void TestMethod1()
+        public async void Courses_GetRelatedGroup_Returns_Groups()
         {
-            int? id = 1;
-            var expected = 0;
-            var actual = _unitOfWork.GroupRepos.GetById(id);
-            Assert.AreEqual(expected, actual);
+            var actualGroups = _testClient.
         }
     }
 }
