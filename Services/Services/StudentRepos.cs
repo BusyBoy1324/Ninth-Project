@@ -1,9 +1,6 @@
-﻿using NinthProject.Infrastructure;
-using NinthProject.Models;
-using NinthProject.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace NinthProject.Services
+namespace NinthProject
 {
     public class StudentRepos : IStudentRepos
     {

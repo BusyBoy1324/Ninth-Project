@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NinthProject.Models
+namespace NinthProject
 {
     public class Groups
     {
@@ -8,6 +8,5 @@ namespace NinthProject.Models
         public int GroupId { get; set; }
         public int CourseId { get; set; }
         public string GroupName { get; set; }
-
     }
 }

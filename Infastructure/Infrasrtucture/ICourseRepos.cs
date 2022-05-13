@@ -1,6 +1,4 @@
-﻿using NinthProject.Models;
-
-namespace NinthProject.Infrastructure
+﻿namespace NinthProject
 {
     public interface ICourseRepos
     {
@@ -10,7 +8,7 @@ namespace NinthProject.Infrastructure
         void Update(Courses course);
         void Delete(Courses course);
         List<Groups> GetRelatedGroups(int? id);
-        Courses Find(int ? id);
-        bool GetAny (int id);
+        Courses Find(int? id);
+        bool GetAny(int id);
     }
 }

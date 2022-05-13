@@ -1,4 +1,4 @@
-﻿namespace NinthProject.Infrastructure
+﻿namespace NinthProject
 {
     public interface IUnitOfWork
     {

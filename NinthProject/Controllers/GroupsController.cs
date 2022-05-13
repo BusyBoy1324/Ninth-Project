@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NinthProject.Data;
-using NinthProject.Infrastructure;
-using NinthProject.Models;
 
 namespace NinthProject.Controllers
 {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NinthProject.Models;
 
-namespace NinthProject.Infrastructure
+namespace NinthProject
 {
     public interface IGroupRepos
     {

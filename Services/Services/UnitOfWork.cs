@@ -1,7 +1,4 @@
-﻿using NinthProject.Data;
-using NinthProject.Infrastructure;
-
-namespace NinthProject.Services
+﻿namespace NinthProject
 {
     public class UnitOfWork : IUnitOfWork
     {
