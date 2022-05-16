@@ -37,7 +37,7 @@ namespace NinthProject
             return group;
         }
 
-        public DbSet<Courses> GetDbSetCourses()
+        public DbSet<Course> GetDbSetCourses()
         {
             return _context.Courses;
         }

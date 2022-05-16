@@ -2,13 +2,12 @@
 {
     public interface ICourseRepos
     {
-        IList<Courses> GetAll();
-        Courses GetById(int? id);
-        void Insert(Courses course);
-        void Update(Courses course);
-        void Delete(Courses course);
+        IList<Course> GetAll();
+        Course GetById(int? id);
+        void Insert(Course course);
+        void Update(Course course);
+        void Delete(Course course);
         List<Groups> GetRelatedGroups(int? id);
-        Courses Find(int? id);
         bool GetAny(int id);
     }
 }

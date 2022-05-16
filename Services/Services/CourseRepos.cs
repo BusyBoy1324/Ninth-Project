@@ -9,29 +9,23 @@
             _context = context;
         }
 
-        public bool GetAny(int id)
+        public bool GetAny(int id) 
         {
             var anyCourses = _context.Courses.Any(x => x.CourseId == id);
             return anyCourses;
         }
 
-        public void Delete(Courses course)
+        public void Delete(Course course)
         {
             _context.Courses.Remove(course);
         }
 
-        public Courses Find(int? id)
-        {
-            var course = _context.Courses.Find(id);
-            return course;
-        }
-
-        public IList<Courses> GetAll()
+        public IList<Course> GetAll()
         {
             return _context.Courses.ToList();
         }
 
-        public Courses GetById(int? id)
+        public Course GetById(int? id)
         {
             var course = _context.Courses.Where(x => x.CourseId == id).FirstOrDefault();
             return course;
@@ -43,12 +37,12 @@
             return relatedGroups;
         }
 
-        public void Insert(Courses course)
+        public void Insert(Course course)
         {
             _context.Courses.Add(course);
         }
 
-        public void Update(Courses course)
+        public void Update(Course course)
         {
             _context.Courses.Update(course);
         }

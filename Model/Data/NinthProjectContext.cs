@@ -14,7 +14,7 @@ namespace NinthProject
         {
         }
 
-        public DbSet<Courses> Courses { get; set; }
+        public DbSet<Course> Courses { get; set; }
 
         public DbSet<Groups> Groups { get; set; }
 

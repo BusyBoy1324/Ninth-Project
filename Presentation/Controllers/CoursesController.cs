@@ -52,7 +52,7 @@ namespace NinthProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseId,CourseName,CourseDescription")] Courses courses)
+        public async Task<IActionResult> Create([Bind("CourseId,CourseName,CourseDescription")] Course courses)
         {
             if (ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace NinthProject.Controllers
                 return NotFound();
             }
 
-            var courses = _unitOfWork.CoursesRepos.Find(id);
+            var courses = _unitOfWork.CoursesRepos.GetById(id);
             if (courses == null)
             {
                 return NotFound();
@@ -84,7 +84,7 @@ namespace NinthProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CourseId,CourseName,CourseDescription")] Courses courses)
+        public async Task<IActionResult> Edit(int id, [Bind("CourseId,CourseName,CourseDescription")] Course courses)
         {
             if (id != courses.CourseId)
             {
@@ -136,7 +136,7 @@ namespace NinthProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var courses = _unitOfWork.CoursesRepos.Find(id);
+            var courses = _unitOfWork.CoursesRepos.GetById(id);
             _unitOfWork.CoursesRepos.Delete(courses);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));

@@ -2,7 +2,7 @@
 
 namespace NinthProject
 {
-    public class Courses
+    public class Course
     {
         [Key]
         public int CourseId { get; set; }

@@ -9,7 +9,7 @@ namespace NinthProject
         void Insert(Groups group);
         void Update(Groups group);
         void Delete(Groups group);
-        DbSet<Courses> GetDbSetCourses();
+        DbSet<Course> GetDbSetCourses();
         Groups Find(int? id);
         List<Students> GetRelatedStudents(int? id);
         bool GetAny(int id);

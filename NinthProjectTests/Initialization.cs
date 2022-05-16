@@ -30,9 +30,9 @@ namespace NinthProjectTests
 
                 using (var scope = _factory.Services.CreateScope())
                 {
-                    var scopedServices = scope.ServiceProvider;
-                    var context = scopedServices.GetRequiredService<NinthProjectContext>();
-                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
+                    var context = scope.ServiceProvider.GetRequiredService<NinthProjectContext>();
+
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
                     context.Database.EnsureDeleted();
                     context.Database.EnsureCreated();
                     try
@@ -49,13 +49,13 @@ namespace NinthProjectTests
         }
         private static void InitializeDbForTests(NinthProjectContext context)
         {
-            context.Courses.Add(new Courses
+            context.Courses.Add(new Course
             {
                 CourseName = "SR",
                 CourseDescription = "lawyers",
                 CourseId = 1
             });
-            context.Courses.Add(new Courses
+            context.Courses.Add(new Course
             {
                 CourseName = "FT",
                 CourseDescription = "food technologists",
