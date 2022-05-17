@@ -13,11 +13,9 @@ namespace NinthProjectTests
     [TestClass]
     public class NinthProjectTests
     {
-        private HttpClient _testClient;
         CourseRepos _coursesServices;
         GroupRepos _groupsServices;
         StudentRepos _studentServices;
-        UnitOfWork _unitOfWork;
         NinthProjectContext context;
 
         [TestInitialize]
@@ -31,7 +29,7 @@ namespace NinthProjectTests
             this._studentServices = new StudentRepos(context);
         }
 
-    [TestMethod]
+        [TestMethod]
         public void Courses_AddNewCourse_Returns_Courses()
         {
             Course expectedCourse = new Course
@@ -46,26 +44,15 @@ namespace NinthProjectTests
         [TestMethod]
         public void Courses_CourseGetById_Returns_Course()
         {
-            Course expectedCourse = new Course
+            var expected = context.Courses.Where(c => c.CourseName == "SR").FirstOrDefault();
+            if (expected == null)
             {
-                CourseName = "VirtualTestGetById",
-                CourseDescription = "VirtualTestGetById_description"
-            };
-            int index = _coursesServices.GetAll().Count;
-            _coursesServices.Insert(expectedCourse);
-            context.SaveChanges();
-
-            var allCourses = _coursesServices.GetAll();
-            int id = -1;
-            foreach (var course in allCourses)
-            {
-                if(course.CourseName == expectedCourse.CourseName && expectedCourse.CourseDescription == course.CourseDescription)
-                {
-                    id = course.CourseId;
-                }
+                Assert.Fail($"{context}");
             }
-            Course actual = _coursesServices.GetById(id);
-            Assert.AreEqual(expectedCourse.CourseName, actual.CourseName);
+
+            var actual = _coursesServices.GetById(expected.CourseId);
+
+            Assert.AreEqual(expected, actual);
         }
         [TestMethod]
         public void Courses_CoursesGetAny_Returns_Boolean()
