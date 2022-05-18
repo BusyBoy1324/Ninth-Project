@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NinthProject;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using static NinthProjectTests.Utilities;
 
 namespace NinthProjectTests
 {
@@ -17,12 +17,13 @@ namespace NinthProjectTests
         GroupRepos _groupsServices;
         StudentRepos _studentServices;
         NinthProjectContext context;
+        WebApplicationFactory<Program> factory;
 
         [TestInitialize]
         public void Initialize()
         {
-            var factory = new Utilities.CustomWebApplicationFactory<Program>();
-            var scope = factory.Services.CreateScope();
+            this.factory = new CustomWebApplicationFactory<Program>();
+            var scope = this.factory.Services.CreateScope();
             context = scope.ServiceProvider.GetRequiredService<NinthProjectContext>();
             this._coursesServices = new CourseRepos(context);
             this._groupsServices = new GroupRepos(context);
@@ -44,15 +45,21 @@ namespace NinthProjectTests
         [TestMethod]
         public void Courses_CourseGetById_Returns_Course()
         {
-            var expected = context.Courses.Where(c => c.CourseName == "SR").FirstOrDefault();
+            var expected = _coursesServices.GetAll(); //Where(c => c.CourseName == "SR").FirstOrDefault();
             if (expected == null)
             {
-                Assert.Fail($"{context}");
+                Assert.Fail("Expected is null");
             }
 
-            var actual = _coursesServices.GetById(expected.CourseId);
+            /*var actual = _coursesServices.GetById(expected.CourseId);
 
-            Assert.AreEqual(expected, actual);
+            if (actual == null)
+            {
+                Assert.Fail($"Actual is null");
+            }
+
+            Assert.AreEqual(expected.CourseName, actual.CourseName);*/
+            Assert.Fail("end");
         }
         [TestMethod]
         public void Courses_CoursesGetAny_Returns_Boolean()
@@ -121,9 +128,9 @@ namespace NinthProjectTests
             expectedGroups.Add(expectedGroup);
             var actual = _coursesServices.GetRelatedGroups(courseId);
             bool equal = true;
-            for(int i = 0; i < actual.Count; i++)
+            for (int i = 0; i < actual.Count; i++)
             {
-                if(actual[i] != expectedGroups[i])
+                if (actual[i] != expectedGroups[i])
                 {
                     equal = false;
                     break;
@@ -154,30 +161,30 @@ namespace NinthProjectTests
             expectedCourse.CourseDescription = "Zahodi poskoree, pro[censored] khm... potrat` vsio bablo";
             _coursesServices.Update(expectedCourse);
             var actual = _coursesServices.GetById(expectedCourse.CourseId);
-            Assert.AreEqual(expectedCourse,actual);
+            Assert.AreEqual(expectedCourse, actual);
         }
-        [TestCleanup]
-        public void ClearToGlassClearly()
-        {
-            var allStudents = _studentServices.GetAll();
-            foreach (var student in allStudents)
-            {
-                _studentServices.Delete(student);
-            }
-            context.SaveChanges();
-            var allGroups = _groupsServices.GetAll();
-            foreach (var group in allGroups)
-            {
-                _groupsServices.Delete(group);
-            }
-            context.SaveChanges();
-            var allCourses = _coursesServices.GetAll();
-            foreach (var course in allCourses)
-            {
-                _coursesServices.Delete(course);
-            }
-            context.SaveChanges();
-            Assert.AreEqual(true, !false);
-        }
+        //[TestCleanup]
+        //public void ClearToGlassClearly()
+        //{
+        //    var allStudents = _studentServices.GetAll();
+        //    foreach (var student in allStudents)
+        //    {
+        //        _studentServices.Delete(student);
+        //    }
+        //    context.SaveChanges();
+        //    var allGroups = _groupsServices.GetAll();
+        //    foreach (var group in allGroups)
+        //    {
+        //        _groupsServices.Delete(group);
+        //    }
+        //    context.SaveChanges();
+        //    var allCourses = _coursesServices.GetAll();
+        //    foreach (var course in allCourses)
+        //    {
+        //        _coursesServices.Delete(course);
+        //    }
+        //    context.SaveChanges();
+        //    Assert.AreEqual(true, !false);
+        //}
     }
 }

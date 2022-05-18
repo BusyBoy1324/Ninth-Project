@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace NinthProjectTests
     {
         internal class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
         {
-            protected void ConfigureWebHost()
+            protected override void ConfigureWebHost(IWebHostBuilder builder)
             {
                 var _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
                 {
@@ -23,8 +24,7 @@ namespace NinthProjectTests
                         var dbContextDescriptor = services.SingleOrDefault(d =>
                             d.ServiceType == typeof(DbContextOptions<NinthProjectContext>));
                         services.Remove(dbContextDescriptor);
-
-                        services.AddDbContext<NinthProjectContext>(options => options.UseInMemoryDatabase("universityTest"));
+                        services.AddDbContext<NinthProjectContext>(options => options.UseInMemoryDatabase("NinthProjectTestDb"));
                     });
                 });
 

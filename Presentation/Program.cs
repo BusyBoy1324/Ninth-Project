@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<NinthProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NinthProjectContext") ?? throw new InvalidOperationException("Connection string 'NinthProjectContext' not found.")));
+//builder.Services.AddDbContext<NinthProjectContext>(options =>
+//    options.UseInMemoryDatabase("NinthProjectTestDb"));
 builder.Services.AddTransient<NinthProject.IUnitOfWork, UnitOfWork>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
