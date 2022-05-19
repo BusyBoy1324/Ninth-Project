@@ -17,34 +17,38 @@ namespace NinthProjectTests
         {
             protected override void ConfigureWebHost(IWebHostBuilder builder)
             {
-                var _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+                builder.ConfigureServices(services =>
                 {
-                    builder.ConfigureTestServices(services =>
+                    var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType ==
+                            typeof(DbContextOptions<NinthProjectContext>));
+
+                    services.Remove(descriptor);
+
+                    services.AddDbContext<NinthProjectContext>(options =>
                     {
-                        var dbContextDescriptor = services.SingleOrDefault(d =>
-                            d.ServiceType == typeof(DbContextOptions<NinthProjectContext>));
-                        services.Remove(dbContextDescriptor);
-                        services.AddDbContext<NinthProjectContext>(options => options.UseInMemoryDatabase("NinthProjectTestDb"));
+                        options.UseInMemoryDatabase("universityTest");
                     });
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var context = scope.ServiceProvider.GetRequiredService<NinthProjectContext>();
+
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
+                        context.Database.EnsureDeleted();
+                        context.Database.EnsureCreated();
+                        try
+                        {
+                            InitializeDbForTests(context);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "An error occurred seeding the " +
+                               "database with test messages. Error: {Message}", ex.Message);
+                        }
+                    }
                 });
-
-                using (var scope = _factory.Services.CreateScope())
-                {
-                    var context = scope.ServiceProvider.GetRequiredService<NinthProjectContext>();
-
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
-                    context.Database.EnsureDeleted();
-                    context.Database.EnsureCreated();
-                    try
-                    {
-                        InitializeDbForTests(context);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "An error occurred seeding the " +
-                           "database with test messages. Error: {Message}", ex.Message);
-                    }
-                }
             }
         }
         private static void InitializeDbForTests(NinthProjectContext context)
@@ -60,6 +64,12 @@ namespace NinthProjectTests
                 CourseName = "FT",
                 CourseDescription = "food technologists",
                 CourseId = 2
+            });
+            context.Courses.Add(new Course
+            {
+                CourseName = "VC",
+                CourseDescription = "engineers of the virtual casino's | USE MY PROMOCODE FOR +50% TO FIRST DEPOSITE!!!",
+                CourseId = 3
             });
             context.Groups.Add(new Groups
             {

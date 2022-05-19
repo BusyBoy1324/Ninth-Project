@@ -9,7 +9,7 @@
             _context = context;
         }
 
-        public bool GetAny(int id) 
+        public bool GetAny(int id)
         {
             var anyCourses = _context.Courses.Any(x => x.CourseId == id);
             return anyCourses;

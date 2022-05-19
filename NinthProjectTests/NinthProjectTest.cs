@@ -15,7 +15,7 @@ namespace NinthProjectTests
     {
         CourseRepos _coursesServices;
         GroupRepos _groupsServices;
-        StudentRepos _studentServices;
+        StudentRepos _studentsServices;
         NinthProjectContext context;
         WebApplicationFactory<Program> factory;
 
@@ -27,7 +27,7 @@ namespace NinthProjectTests
             context = scope.ServiceProvider.GetRequiredService<NinthProjectContext>();
             this._coursesServices = new CourseRepos(context);
             this._groupsServices = new GroupRepos(context);
-            this._studentServices = new StudentRepos(context);
+            this._studentsServices = new StudentRepos(context);
         }
 
         [TestMethod]
@@ -40,151 +40,185 @@ namespace NinthProjectTests
             };
             _coursesServices.Insert(expectedCourse);
             context.SaveChanges();
-            Assert.AreEqual(expectedCourse, _coursesServices.GetAll().FirstOrDefault(expectedCourse));
+            Assert.AreSame(expectedCourse, _coursesServices.GetById(expectedCourse.CourseId));
         }
         [TestMethod]
         public void Courses_CourseGetById_Returns_Course()
         {
-            var expected = _coursesServices.GetAll(); //Where(c => c.CourseName == "SR").FirstOrDefault();
-            if (expected == null)
-            {
-                Assert.Fail("Expected is null");
-            }
+            var expected = context.Courses.Where(c => c.CourseName == "SR").FirstOrDefault();
 
-            /*var actual = _coursesServices.GetById(expected.CourseId);
+            var actual = _coursesServices.GetById(expected.CourseId);
 
-            if (actual == null)
-            {
-                Assert.Fail($"Actual is null");
-            }
-
-            Assert.AreEqual(expected.CourseName, actual.CourseName);*/
-            Assert.Fail("end");
+            Assert.AreEqual(expected.CourseName, actual.CourseName);
         }
         [TestMethod]
         public void Courses_CoursesGetAny_Returns_Boolean()
         {
-            Course expectedCourse = new Course
-            {
-                CourseName = "VirtualTestGetAny",
-                CourseDescription = "VirtualTestGetAny_description"
-            };
-            _coursesServices.Insert(expectedCourse);
-            context.SaveChanges();
-            bool actual = _coursesServices.GetAny(expectedCourse.CourseId);
+            var course = context.Courses.Where(n => n.CourseName == "FT").FirstOrDefault();
+
             bool expected = true;
+
+            bool actual = _coursesServices.GetAny(course.CourseId);
+
             Assert.AreEqual(expected, actual);
         }
         [TestMethod]
         public void Courses_DeleteCourse_Returns_Courses()
         {
-            Course expectedCourse = new Course
-            {
-                CourseName = "VirtualTestDelete",
-                CourseDescription = "VirtualTestDelete_description"
-            };
-            _coursesServices.Insert(expectedCourse);
+            var course = context.Courses.Where(n => n.CourseName == "VC").FirstOrDefault();
+
+            _coursesServices.Delete(course);
             context.SaveChanges();
-            int expected = _coursesServices.GetAll().Count() - 1;
-            _coursesServices.Delete(expectedCourse);
-            context.SaveChanges();
-            Assert.AreEqual(expected, _coursesServices.GetAll().Count);
+            bool expected = false;
+            bool actual = _coursesServices.GetAny(course.CourseId);
+
+            Assert.AreEqual(expected, actual);
         }
         [TestMethod]
         public void Courses_RelatedGroups_Returns_Groups()
         {
-            Course expectedCourse = new Course
-            {
-                CourseName = "VirtualTestGetRelatedGroups",
-                CourseDescription = "VirtualTestGetRelatedGroups_description"
-            };
-            _coursesServices.Insert(expectedCourse);
-            context.SaveChanges();
-            int courseId = -1;
-            int groupId = -1;
-            foreach (var course in _coursesServices.GetAll())
-            {
-                if (course.CourseName == expectedCourse.CourseName && expectedCourse.CourseDescription == course.CourseDescription)
-                {
-                    courseId = course.CourseId;
-                }
-            }
-            Groups expectedGroup = new Groups
-            {
-                CourseId = courseId,
-                GroupName = "VirtualTestGetRelatedGroups_groupname"
-            };
-            _groupsServices.Insert(expectedGroup);
-            context.SaveChanges();
-            foreach (var group in _groupsServices.GetAll())
-            {
-                if (group.GroupName == expectedGroup.GroupName)
-                {
-                    groupId = group.GroupId;
-                }
-            }
-            List<Groups>? expectedGroups = new List<Groups>();
-            expectedGroup.GroupId = groupId;
-            expectedGroups.Add(expectedGroup);
-            var actual = _coursesServices.GetRelatedGroups(courseId);
-            bool equal = true;
-            for (int i = 0; i < actual.Count; i++)
-            {
-                if (actual[i] != expectedGroups[i])
-                {
-                    equal = false;
-                    break;
-                }
-            }
+            var course = context.Courses.Where(i => i.CourseId == 2).FirstOrDefault();
+            var expected = context.Groups.Where(i => i.CourseId == 2).ToList();
 
-            Assert.AreEqual(true, equal);
+            var actual = _coursesServices.GetRelatedGroups(course.CourseId);
+
+            CollectionAssert.AreEqual(expected, actual);
+
         }
         [TestMethod]
         public void Courses_UpdateCourse_Returnes_Updated()
         {
-            Course expectedCourse = new Course
-            {
-                CourseName = "VirtualTestUpdate",
-                CourseDescription = "VirtualTestUpdate_description"
-            };
-            _coursesServices.Insert(expectedCourse);
-            context.SaveChanges();
-            foreach (var course in _coursesServices.GetAll())
-            {
-                if (course.CourseName == expectedCourse.CourseName && expectedCourse.CourseDescription == course.CourseDescription)
-                {
-                    expectedCourse.CourseId = course.CourseId;
-                    break;
-                }
-            }
-            expectedCourse.CourseName = "VirtualCasinoVulkan";
-            expectedCourse.CourseDescription = "Zahodi poskoree, pro[censored] khm... potrat` vsio bablo";
-            _coursesServices.Update(expectedCourse);
-            var actual = _coursesServices.GetById(expectedCourse.CourseId);
-            Assert.AreEqual(expectedCourse, actual);
+            var expected = context.Courses.Where(n => n.CourseName == "SR").FirstOrDefault();
+            expected.CourseName = "MH";
+            expected.CourseDescription = "Miners";
+            _coursesServices.Update(expected);
+
+            var actual = _coursesServices.GetById(expected.CourseId);
+
+            Assert.AreEqual(expected.CourseName, actual.CourseName);
         }
-        //[TestCleanup]
-        //public void ClearToGlassClearly()
-        //{
-        //    var allStudents = _studentServices.GetAll();
-        //    foreach (var student in allStudents)
-        //    {
-        //        _studentServices.Delete(student);
-        //    }
-        //    context.SaveChanges();
-        //    var allGroups = _groupsServices.GetAll();
-        //    foreach (var group in allGroups)
-        //    {
-        //        _groupsServices.Delete(group);
-        //    }
-        //    context.SaveChanges();
-        //    var allCourses = _coursesServices.GetAll();
-        //    foreach (var course in allCourses)
-        //    {
-        //        _coursesServices.Delete(course);
-        //    }
-        //    context.SaveChanges();
-        //    Assert.AreEqual(true, !false);
-        //}
+
+        [TestMethod]
+        public void Groups_AddNewGroup_Returns_Group()
+        {
+            Groups expectedGroup = new Groups
+            {
+                GroupName = "VirtualTestAdd",
+                CourseId = 1
+            };
+            _groupsServices.Insert(expectedGroup);
+            context.SaveChanges();
+            Assert.AreEqual(expectedGroup.GroupName, _groupsServices.GetById(expectedGroup.GroupId).GroupName);
+        }
+        [TestMethod]
+        public void Groups_GroupGetById_Returns_Group()
+        {
+            var expected = context.Groups.Where(c => c.GroupName == "SR-01").FirstOrDefault();
+
+            var actual = _groupsServices.GetById(expected.GroupId);
+
+            Assert.AreEqual(expected.GroupName, actual.GroupName);
+        }
+        [TestMethod]
+        public void Groups_GroupsGetAny_Returns_Boolean()
+        {
+            var group = context.Groups.Where(n => n.GroupName == "FT-01").FirstOrDefault();
+
+            bool expected = true;
+
+            bool actual = _groupsServices.GetAny(group.GroupId);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        public void Groups_DeleteGroup_Returns_Groups()
+        {
+            var group = context.Groups.Where(n => n.GroupName == "SR-02").FirstOrDefault();
+
+            _groupsServices.Delete(group);
+            context.SaveChanges();
+            bool expected = false;
+            bool actual = _groupsServices.GetAny(group.GroupId);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        public void Groups_RelatedStudents_Returns_Students()
+        {
+            var group = context.Groups.Where(i => i.GroupId == 1).FirstOrDefault();
+            var expected = context.Students.Where(i => i.GroupId == 1).ToList();
+
+            var actual = _groupsServices.GetRelatedStudents(group.GroupId);
+
+            CollectionAssert.AreEqual(expected, actual);
+
+        }
+        [TestMethod]
+        public void Groups_UpdateGroup_Returnes_Updated()
+        {
+            var expected = context.Groups.Where(n => n.GroupName == "SR-01").FirstOrDefault();
+            expected.GroupName = "MH-01";
+            _groupsServices.Update(expected);
+
+            var actual = _groupsServices.GetById(expected.GroupId);
+
+            Assert.AreEqual(expected.GroupName, actual.GroupName);
+        }
+        [TestMethod]
+        public void Students_AddNewStudent_Returns_Student()
+        {
+            Students expectedStudent = new Students
+            {
+                FirstName = "VirtualTestAdd",
+                LastName = "VirtualTestAdd",
+                GroupId = 1
+            };
+            _studentsServices.Insert(expectedStudent);
+            context.SaveChanges();
+            Assert.AreEqual(expectedStudent.FirstName, _studentsServices.GetById(expectedStudent.StudentId).FirstName);
+        }
+        [TestMethod]
+        public void Students_StudentGetById_Returns_Student()
+        {
+            var expected = context.Students.Where(c => c.FirstName == "Mikyta").FirstOrDefault();
+
+            var actual = _studentsServices.GetById(expected.StudentId);
+
+            Assert.AreEqual(expected.FirstName, actual.FirstName);
+        }
+        [TestMethod]
+        public void Students_StudentGetAny_Returns_Boolean()
+        {
+            var student = context.Students.Where(n => n.FirstName == "Mikyta").FirstOrDefault();
+
+            bool expected = true;
+
+            bool actual = _studentsServices.GetAny(student.StudentId);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        public void Students_DeleteStudent_Returns_Students()
+        {
+            var student = context.Students.Where(n => n.FirstName == "Mikyta").FirstOrDefault();
+
+            _studentsServices.Delete(student);
+            context.SaveChanges();
+            bool expected = false;
+            bool actual = _studentsServices.GetAny(student.StudentId);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        public void Students_UpdateStudent_Returnes_Updated()
+        {
+            var expected = context.Students.Where(n => n.FirstName == "Mikyta").FirstOrDefault();
+            expected.FirstName = "Maxim";
+            _studentsServices.Update(expected);
+
+            var actual = _studentsServices.GetById(expected.StudentId);
+
+            Assert.AreEqual(expected.FirstName, actual.FirstName);
+        }
     }
 }
